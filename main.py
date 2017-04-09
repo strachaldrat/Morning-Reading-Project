@@ -21,9 +21,9 @@ current_date = now.day
 ordinal_number = ""
 current_month = ""
 
-
-raw_conditions_dict = json.loads('http://api.wunderground.com/api/XXXX/conditions/q/XXXX/XXXX.json')
-current_temperature = raw_conditions_dict[]
+weather_data = urllib2.urlopen('http://api.wunderground.com/api/XXXX/conditions/q/XX/XXXX.json')
+weather_read = weather_data.read()
+weather_dict = json.loads(weather_read)
 
 # tests for pm time and subtracts if true
 if now.hour > 12:
@@ -42,6 +42,8 @@ else:
 # tests if the minute time equates to 0 and leaves variable empty if true
 if now.minute == 0:
     current_minute = ""
+elif now.minute == 0:
+    current_minute = "0" + str(now.minute)
 else:
     current_minute = now.minute
 
@@ -74,13 +76,26 @@ else:
 #stores name of month in current_month
 current_month = calendar.month_name[now.month]
 
-#extracts current_temperature from current_raw_conditions
+#extracts weather from wunderground_data
+temperature_float = weather_dict['current_observation']['temp_c']
+temperature_rounded = round(temperature_float, 0)
+current_temperature = int(temperature_rounded)
 
+#extracts weather forecast from wunderground_data
+current_weather_forecast = weather_dict['current_observation']['weather']
 
-# Text to speech reads:
+#extracts wind speed from wunderground_data
+wind_speed_float = weather_dict['current_observation']['wind_kph']
+wind_speed_rounded = round(wind_speed_float, 0)
+current_wind_speed = int(wind_speed_rounded)
 
-tts = "Good %s. It's %s %s %s on %s the %s%s of %s. The weather in Newcastle is %s" % (current_day_period, current_hour,
-                                                    current_minute, current_time_period, day_of_week, current_date,
-                                                     ordinal_number, current_month, current_temperature )
+#extracts wind direction from wunderground_data
+wind_direction_acronym = weather_dict['current_observation']['wind_dir']
+
+#text to speech reads:
+
+tts = "Good %s. It's %s %s %s on %s the %s%s of %s. The weather in Newcastle is %s degrees with %s. The wind speed is %s kilometers an hour from the %s" % (current_day_period, current_hour,
+                                                    current_minute, current_time_period, day_of_week, current_date, ordinal_number, current_month,
+                                                    current_temperature, current_weather_forecast, current_wind_speed, current_wind_direction )
 
 print tts
